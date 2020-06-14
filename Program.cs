@@ -8,58 +8,52 @@ namespace calculator {
 
         static void Main(string[] args) {
             string text;
-            Lexer l;
-            Parser p;
-            decimal res;
-            ParseResult p_res;
-            LexerResult l_res;
+            ParseResult parseRes;
+            LexerResult lexRes;
+            decimal result;
 
             while (true) {
-                Console.Write("calc > ");
-                text = Console.ReadLine().Trim();
+                text = GetText();
 
-                if (text == "quit()") {
-                    return;
+                switch (text) {
+                    case "quit()": return;
+                    case "":       continue;
                 }
 
-                else if (text == "") {
+                lexRes = Lex(text);
+
+                // print error if applicable
+                if (lexRes.error != null) {
+                    Console.WriteLine(lexRes.error.Repr());
                     continue;
                 }
 
-                l = new Lexer(text);
-                l_res = l.MakeTokens();
+                parseRes = Parse(lexRes.tokens);
 
-                if (l_res.error != null) {
-                    Console.WriteLine(l_res.error.Repr());
+                // print error if applicable
+                if (parseRes.error != null) {
+                    Console.WriteLine(parseRes.error.Repr());
                     continue;
                 }
 
-                p = new Parser(l_res.tokens);
-                p_res = p.Parse();
-
-                if (p_res.error != null) {
-                    Console.WriteLine(p_res.error.Repr());
-                    continue;
-                }
-
-                res = p_res.node.Eval();
-                Console.WriteLine(res);
+                result = parseRes.node.Eval();
+                Console.WriteLine(result);
             }
         }
-    }
 
-    class Error {
-
-        string name;
-        string arg;
-
-        public Error(string name, string arg) {
-            this.name = name;
-            this.arg = arg;
+        static string GetText() {
+            Console.Write("calc > ");
+            return Console.ReadLine().Trim();
         }
 
-        public string Repr() {
-            return $"{this.name}, \'{this.arg}\'";
+        static LexerResult Lex(string text) {
+            Lexer lexer = new Lexer(text);
+            return lexer.MakeTokens();
+        }
+
+        static ParseResult Parse(List<Token> tokens) {
+            Parser parser = new Parser(tokens);
+            return parser.Parse();
         }
     }
 }
