@@ -44,7 +44,7 @@ namespace calculator {
 				case "MUL":   return this.lNode.Eval() * this.rNode.Eval();
 				case "DIV":   return this.lNode.Eval() / this.rNode.Eval();
 				case "EXP":   return (decimal)Math.Pow((double)this.lNode.Eval(), (double)this.rNode.Eval());
-				default:      throw new ArgumentException("Unknown operator token");
+				default:      throw new ArgumentException("Unknown operator token", this.opTok.name);
 			}
 		}
 	}
@@ -64,12 +64,10 @@ namespace calculator {
 		}
 
 		public decimal Eval() {
-			if (this.opTok.name == "PLUS") {
-				return this.node.Eval();
-			} else if (this.opTok.name == "MINUS") {
-				return this.node.Eval() * -1;
-			} else {
-				throw new ArgumentException("Unknown operator token", this.opTok.name);
+			switch (this.opTok.name) {
+				case "PLUS":  return this.node.Eval();
+				case "MINUS": return this.node.Eval() * -1;
+				default:      throw new ArgumentException("Unknown operator token", this.opTok.name);
 			}
 		}
 	}
@@ -128,7 +126,7 @@ namespace calculator {
 		public ParseResult Parse() {
 			dynamic res = this.Expr();
 			if (res.error == null & this.currentTok.name != "EOF") {
-				return res.Failure(new Error("Invalid syntax", ""));
+				return res.Failure(new Error("Invalid syntax", this.currentTok.Repr()));
 			}
 			return res;
 		}
@@ -161,12 +159,12 @@ namespace calculator {
 					res.Register(this.Advance());
 					return res.Success(expr);
 				} else {
-					return res.Failure(new Error("Expected closing parenthesis", ""));
+					return res.Failure(new Error("Expected closing parenthesis", this.currentTok.Repr()));
 				}
 			}
 
 			else {
-				return res.Failure(new Error("Expected int", this.currentTok.name));
+				return res.Failure(new Error("Expected int", this.currentTok.Repr()));
 			}
 		}
 

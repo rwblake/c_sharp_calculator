@@ -40,9 +40,9 @@ namespace calculator {
     class LexerResult {
 
         public List<Token> tokens;
-        public Error? error;
+        public dynamic error;
 
-        public LexerResult(List<Token> tokens, Error? error=null) {
+        public LexerResult(List<Token> tokens, dynamic error=null) {
             this.tokens = tokens;
             this.error = error;
         }
