@@ -47,8 +47,8 @@ namespace calculator {
         }
 
         static LexerResult Lex(string text) {
-            Lexer lexer = new Lexer(text);
-            return lexer.MakeTokens();
+            Lexer lexer = new Lexer();
+            return lexer.MakeTokens(text);
         }
 
         static ParseResult Parse(List<Token> tokens) {
